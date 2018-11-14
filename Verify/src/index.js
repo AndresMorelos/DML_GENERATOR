@@ -30,6 +30,13 @@ const Start = async () => {
     generateFile([...hasDupsObjects(dbcontent)], 'duplicates','Duplicate entry DB')
 
     let not_found = []
+    for(let item of dbcontent){
+        let response = await checkCustomer(item.token)
+        if(response.status != 200){
+            not_found.push(`${item.id} - ${item.token} - ERROR: ${response.data ? JSON.stringify(response.data) : false } , ${response.statusText}`)
+        }
+    }
+
     for(let item of stripecontent){
         let response = await checkCustomer(item.token)
         if(response.status != 200){
@@ -74,7 +81,7 @@ const checkCustomer = async (customer) => {
         method: 'get',
         url: `https://payments.test.cebroker.com/customer/${customer}`,
         headers: { 'Authorization' : 'Basic ZnJlZDpmcmVk' }
-    }).then(resp => {return resp.response}).catch(resp => {return resp.response})
+    }).then(resp => {return resp}).catch(resp => {return resp.response})
 }
 
 Start()
