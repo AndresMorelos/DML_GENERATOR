@@ -32,11 +32,12 @@ const Start = async () => {
     let not_found = []
     for(let item of stripecontent){
         let response = await checkCustomer(item.token)
-        if(response.includes('resource_missing')){
-            not_found.push(`${item.id} - ${item.token}`)
+        if(response.status != 200){
+            not_found.push(`${item.id} - ${item.token} - ERROR: ${response.data ? JSON.stringify(response.data) : false } , ${response.statusText}`)
         }
     }
-    generateFile(not_found,'not_found','Customers not found on payment service')
+    
+    generateFile(not_found,'not_found','[Customer verification]')
 
 }
 
@@ -73,7 +74,7 @@ const checkCustomer = async (customer) => {
         method: 'get',
         url: `https://payments.test.cebroker.com/customer/${customer}`,
         headers: { 'Authorization' : 'Basic ZnJlZDpmcmVk' }
-    }).catch(resp => {return resp.response.data.error.code})
+    }).then(resp => {return resp.response}).catch(resp => {return resp.response})
 }
 
 Start()
